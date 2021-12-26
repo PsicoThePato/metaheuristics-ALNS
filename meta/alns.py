@@ -18,16 +18,16 @@ class StateTransition:
 
 
 class LambdaWeights:
+    """
+    Encapsulates lambda configuration to be used to update heuristic success.
+    """
     def __init__(
         self,
         accepted_state_weight: float,
         improved_state_weight: float,
         best_state_weight: float,
     ):
-        if (
-            accepted_state_weight > improved_state_weight
-            or improved_state_weight > best_state_weight
-        ):
+        if accepted_state_weight > improved_state_weight or improved_state_weight > best_state_weight:
             raise ValueError(
                 "Arguments should be so that accepted_state_weight < improved_state_weight < best_state_weight"
             )
@@ -37,7 +37,16 @@ class LambdaWeights:
 
 
 class ALNSProbParameters:
-    def __init__(self, lambda_weights: LambdaWeights, rho: float, destroy_heuristics_len: int, repair_heuristics_len: int) -> None:
+    """
+    Encapsulates probabilities attributes of ALNS metaheuristic
+    """
+    def __init__(
+        self,
+        lambda_weights: LambdaWeights,
+        rho: float,
+        destroy_heuristics_len: int,
+        repair_heuristics_len: int,
+    ) -> None:
         self.lambda_weights = lambda_weights
         self.rho = rho
 
@@ -48,7 +57,7 @@ class ALNSProbParameters:
         self.repair_heuristics_sucess = np.zeros(repair_heuristics_len)
         self.times_used_destroy_heuristics = np.zeros(destroy_heuristics_len)
         self.times_used_repair_heuristics = np.zeros(repair_heuristics_len)
-        
+
 
 class ALNSIter:
     """
@@ -57,24 +66,16 @@ class ALNSIter:
 
     def __init__(
         self,
-        destroy_heuristics: Iterable[
-            Callable[[float, definitions.BaseState], definitions.BaseState]
-        ],
-        repair_heuristics: Iterable[
-            Callable[[definitions.BaseState], definitions.BaseState]
-        ],
+        destroy_heuristics: Iterable[Callable[[float, definitions.BaseState], definitions.BaseState]],
+        repair_heuristics: Iterable[Callable[[definitions.BaseState], definitions.BaseState]],
         scoring_function: Callable[[definitions.BaseState], float],
         acceptance_function: Callable[[StateTransition], bool],
-        prob_parameters: ALNSProbParameters
+        prob_parameters: ALNSProbParameters,
     ):
         if not destroy_heuristics or not repair_heuristics:
-            raise ValueError(
-                "Needs to have at least one destroy and one repair heuristic defined"
-            )
+            raise ValueError("Needs to have at least one destroy and one repair heuristic defined")
         if isgenerator(destroy_heuristics) or isgenerator(repair_heuristics):
-            raise ValueError(
-                "Can't use a generator since heuristics will be itered upon multiple times"
-            )
+            raise ValueError("Can't use a generator since heuristics will be itered upon multiple times")
 
         self.destroy_heuristics = destroy_heuristics
         self.repair_heuristics = repair_heuristics
@@ -84,16 +85,12 @@ class ALNSIter:
         self.current_state = None
         self.prob_parameters = prob_parameters
 
-    def _destroy(
-        self, destruction_parameter: float, state: definitions.BaseState
-    ) -> definitions.BaseState:
+    def _destroy(self, destruction_parameter: float, state: definitions.BaseState) -> definitions.BaseState:
         """
         Selects a destroy heuristic at random, use it to deconstruct given state
         and returns an incomplete state
         """
-        dh_func_idx = np.random.choice(
-            len(self.destroy_heuristics), p=self.prob_parameters.destroy_prob
-        )
+        dh_func_idx = np.random.choice(len(self.destroy_heuristics), p=self.prob_parameters.destroy_prob)
         dh_func = self.destroy_heuristics[dh_func_idx]
         incomplete_state = dh_func(destruction_parameter, state)
         return incomplete_state, dh_func_idx
@@ -103,27 +100,55 @@ class ALNSIter:
         Selects a repair heuristic at random, use it to reconstruct an incomplete
         state and returns the new state
         """
-        rh_func_idx = np.random.choice(
-            len(self.destroy_heuristics), p=self.prob_parameters.destroy_prob
-        )
+        rh_func_idx = np.random.choice(len(self.destroy_heuristics), p=self.prob_parameters.destroy_prob)
         rh_func = self.repair_heuristics[rh_func_idx]
         new_state = rh_func(state)
         return new_state, rh_func_idx
 
+    def update_heuristics_probabilities(self, prob_parameters: ALNSProbParameters):
+        """
+        Updates all heuristics probabilities. Can be called upon after any amount of iteractions.
+        """
+        destroy_used_more_than_zero_mask = prob_parameters.times_used_destroy_heuristics != 0
+        repair_used_more_than_zero_mask = prob_parameters.times_used_repair_heuristics != 0
 
-    def update_heuristics_probabilities(self):
-        pass
+        # formula to calc new probability of used heuristics
+        def calc_new_prob(rho, heuristics_prob, heuristics_success, times_used):
+            new_heuristics_prob = 1 - rho * heuristics_prob + rho * heuristics_success / times_used
+            return new_heuristics_prob
 
+        # updating used heuristics probabilities
+        prob_parameters.destroy_prob[destroy_used_more_than_zero_mask] = calc_new_prob(
+            prob_parameters.rho,
+            prob_parameters.destroy_prob[destroy_used_more_than_zero_mask],
+            prob_parameters.destroy_heuristics_sucess[destroy_used_more_than_zero_mask],
+            prob_parameters.times_used_destroy_heuristics[destroy_used_more_than_zero_mask],
+        )
+        prob_parameters.repair_prob[repair_used_more_than_zero_mask] = calc_new_prob(
+            prob_parameters.rho,
+            prob_parameters.repair_prob[repair_used_more_than_zero_mask],
+            prob_parameters.repair_heuristics_sucess[repair_used_more_than_zero_mask],
+            prob_parameters.times_used_repair_heuristics[repair_used_more_than_zero_mask],
+        )
 
-    def do_alns_iteraction(
-        self, destruction_parameter: float, state: definitions.BaseState
-    ) -> definitions.BaseState:
+        # updating unused heuristics probabilities
+        unused_destroy_mask = np.logical_not(destroy_used_more_than_zero_mask)
+        prob_parameters.destroy_prob[unused_destroy_mask] = (
+            1 - prob_parameters.rho * prob_parameters.destroy_prob[unused_destroy_mask]
+        )
+        unused_repair_mask = np.logical_not(repair_used_more_than_zero_mask)
+        prob_parameters.repair_prob[unused_repair_mask] = (
+            1 - prob_parameters.rho * prob_parameters.repair_prob[unused_repair_mask]
+        )
+
+    def do_alns_iteraction(self, destruction_parameter: float, state: definitions.BaseState) -> definitions.BaseState:
+        """
+        Do one iteraction of ALNS with destroy and repair heuristics given to class object. Returns new state.
+        """
         incomplete_state, dh_idx = self._destroy(destruction_parameter, state)
         new_state, rh_idx = self._repair(incomplete_state)
         new_state_score = self.scoring_function(new_state)
-        isaccepted = self.acceptance_function(
-            StateTransition(self.current_state, new_state)
-        )
+        isaccepted = self.acceptance_function(StateTransition(self.current_state, new_state))
         success_increment = 0
         if isaccepted:
             self.current_state = new_state
