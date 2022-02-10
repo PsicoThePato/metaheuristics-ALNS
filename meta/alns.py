@@ -13,13 +13,20 @@ class StateTransition:
     Holds two states to define a new type with named parameters (old and new state) to be semantically acessed
     """
 
-    old_state: definitions.BaseState
-    new_state: definitions.BaseState
+    old_state: definitions.ProblemDefinition.state
+    new_state: definitions.ProblemDefinition.state
 
 
 class LambdaWeights:
     """
     Encapsulates lambda configuration to be used to update heuristic success.
+
+    The success s(h) of h is initialized with zero at the beginning of
+    the period of p_u iterations. After using h in an iteration, s(h) is increased by δi
+    if the resulting solution is of the corresponding quality:
+    δ1 The new solution is the best one found so far.
+    δ2 The new solution improves the current solution.
+    δ3 The new solution does not improve the current solution, but is accepted.
     """
     def __init__(
         self,
@@ -55,6 +62,7 @@ class ALNSProbParameters:
 
         self.destroy_heuristics_sucess = np.zeros(destroy_heuristics_len)
         self.repair_heuristics_sucess = np.zeros(repair_heuristics_len)
+        
         self.times_used_destroy_heuristics = np.zeros(destroy_heuristics_len)
         self.times_used_repair_heuristics = np.zeros(repair_heuristics_len)
 
@@ -66,9 +74,9 @@ class ALNSIter:
 
     def __init__(
         self,
-        destroy_heuristics: Iterable[Callable[[float, definitions.BaseState], definitions.BaseState]],
-        repair_heuristics: Iterable[Callable[[definitions.BaseState], definitions.BaseState]],
-        scoring_function: Callable[[definitions.BaseState], float],
+        destroy_heuristics: Iterable[Callable[[float, definitions.ProblemDefinition.state], definitions.ProblemDefinition.state]],
+        repair_heuristics: Iterable[Callable[[definitions.ProblemDefinition.state], definitions.ProblemDefinition.state]],
+        scoring_function: Callable[[definitions.ProblemDefinition.state], float],
         acceptance_function: Callable[[StateTransition], bool],
         prob_parameters: ALNSProbParameters,
     ):
@@ -85,7 +93,7 @@ class ALNSIter:
         self.current_state = None
         self.prob_parameters = prob_parameters
 
-    def _destroy(self, destruction_parameter: float, state: definitions.BaseState) -> definitions.BaseState:
+    def _destroy(self, destruction_parameter: float, state: definitions.ProblemDefinition.state) -> definitions.ProblemDefinition.state:
         """
         Selects a destroy heuristic at random, use it to deconstruct given state
         and returns an incomplete state
@@ -95,7 +103,7 @@ class ALNSIter:
         incomplete_state = dh_func(destruction_parameter, state)
         return incomplete_state, dh_func_idx
 
-    def _repair(self, state: definitions.BaseState) -> definitions.BaseState:
+    def _repair(self, state: definitions.ProblemDefinition.state) -> definitions.ProblemDefinition.state:
         """
         Selects a repair heuristic at random, use it to reconstruct an incomplete
         state and returns the new state
@@ -141,7 +149,7 @@ class ALNSIter:
             1 - prob_parameters.rho * prob_parameters.repair_prob[unused_repair_mask]
         )
 
-    def do_alns_iteraction(self, destruction_parameter: float, state: definitions.BaseState) -> definitions.BaseState:
+    def do_alns_iteraction(self, destruction_parameter: float, state: definitions.ProblemDefinition.state) -> definitions.ProblemDefinition.state:
         """
         Do one iteraction of ALNS with destroy and repair heuristics given to class object. Returns new state.
         """
