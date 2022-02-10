@@ -1,4 +1,4 @@
-class BaseState():
+class ProblemDefinition():
     """
     Implements state representation for a given problem
     """
