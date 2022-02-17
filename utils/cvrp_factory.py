@@ -2,14 +2,7 @@
 import sys
 import math
 
-
-
-def read_elem(filename):
-    with open(filename) as f:
-        return [str(elem) for elem in f.read().split()]
-
-
-def main(instance_file, str_time_limit, sol_file, str_nb_trucks):
+def factory(instance_file, str_time_limit, sol_file, str_nb_trucks):
     nb_trucks = int(str_nb_trucks)
 
     #
@@ -22,17 +15,23 @@ def main(instance_file, str_time_limit, sol_file, str_nb_trucks):
     if nb_trucks == 0:
         nb_trucks = get_nb_trucks(instance_file)
 
-    print("Cidades atendidas: ", nb_customers)
-    print("Número de caminhões:  ", nb_trucks)
-    print("Capacidade máxima: ", truck_capacity)
-    print("Distâncias entre cidades: ")
-    for x in distance_matrix:
-         print ("      " ,x)
+    # print("Cidades atendidas: ", nb_customers)
+    # print("Número de caminhões:  ", nb_trucks)
+    # print("Capacidade máxima: ", truck_capacity)
+    # print("Distâncias entre cidades: ")
+    # for x in distance_matrix:
+    #      print ("      " ,x)
     #    print (x, " ", len(distance_matrix))
     # print("Total de membros da distance matrix: ", len(distance_matrix))
-    print ('')
-    print("Demanda das cidades: ",demands, " " ,len(demands))
-    print("Distâncias entre as cidades e o depósito: ", distance_warehouses, " " ,len(distance_warehouses))
+    # print ('')
+    # print("Demanda das cidades: ",demands, " " ,len(demands))
+    # print("Distâncias entre as cidades e o depósito: ", distance_warehouses, " " ,len(distance_warehouses))
+
+    return nb_customers, truck_capacity, distance_matrix, distance_warehouses, demands, nb_trucks
+
+def read_elem(filename):
+    with open(filename) as f:
+        return [str(elem) for elem in f.read().split()]
 
 # The input files follow the "Augerat" format.
 def read_input_cvrp(filename):
@@ -157,14 +156,14 @@ def get_nb_trucks(filename):
     sys.exit(1)
 
 
-if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print("Usage: python cvrp.py input_file [output_file] [time_limit] [nb_trucks]")
-        sys.exit(1)
+# if __name__ == '__main__':
+#     if len(sys.argv) < 2:
+#         print("Usage: python cvrp.py input_file [output_file] [time_limit] [nb_trucks]")
+#         sys.exit(1)
 
-    instance_file = sys.argv[1]
-    sol_file = sys.argv[2] if len(sys.argv) > 2 else None
-    str_time_limit = sys.argv[3] if len(sys.argv) > 3 else "20"
-    str_nb_trucks = sys.argv[4] if len(sys.argv) > 4 else "0"
+#     instance_file = sys.argv[1]
+#     sol_file = sys.argv[2] if len(sys.argv) > 2 else None
+#     str_time_limit = sys.argv[3] if len(sys.argv) > 3 else "20"
+#     str_nb_trucks = sys.argv[4] if len(sys.argv) > 4 else "0"
 
-    main(instance_file, str_time_limit, sol_file, str_nb_trucks)
+#     cvrp_factory(instance_file, str_time_limit, sol_file, str_nb_trucks)
