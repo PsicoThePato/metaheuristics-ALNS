@@ -18,7 +18,7 @@ def main(instance_file):
     # print(test_crvp)
     # print(test_crvp_sol)
     # rd.random_destroyer(2,test_crvp, test_crvp_sol)
-    # test_crvp_sol.calc_cost(test_crvp)
+    test_crvp_sol.calc_cost(test_crvp)
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
