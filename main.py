@@ -3,14 +3,22 @@ import math
 # sys.path.append('./')
 from utils.crvp import crvp
 import utils.cvrp_factory as cvrp_factory
+from utils.crvp_sol import crvp_sol
+import utils.crvp_sol_factory as crvp_sol_factory
+import destruction_heuristics.random_destroyer as rd
 
 
 def main(instance_file):
     print(instance_file)
-    print(sys.path)
+    print(sol_file)
     nb_customers, truck_capacity, distance_matrix, distance_warehouses, demands, nb_trucks = cvrp_factory.factory(instance_file, 0, 0, 0)
-    test = crvp(nb_customers, truck_capacity, distance_matrix, distance_warehouses, demands, nb_trucks)
-    print(test)
+    test_crvp = crvp(nb_customers, truck_capacity, distance_matrix, distance_warehouses, demands, nb_trucks)
+    routes, const = crvp_sol_factory.factory(sol_file)
+    test_crvp_sol = crvp_sol(routes,const)
+    # print(test_crvp)
+    # print(test_crvp_sol)
+    # rd.random_destroyer(2,test_crvp, test_crvp_sol)
+    # test_crvp_sol.calc_cost(test_crvp)
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:

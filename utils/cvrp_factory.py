@@ -21,7 +21,7 @@ def factory(instance_file, str_time_limit, sol_file, str_nb_trucks):
     # print("Distâncias entre cidades: ")
     # for x in distance_matrix:
     #      print ("      " ,x)
-    #    print (x, " ", len(distance_matrix))
+    # #    print (x, " ", len(distance_matrix))
     # print("Total de membros da distance matrix: ", len(distance_matrix))
     # print ('')
     # print("Demanda das cidades: ",demands, " " ,len(demands))
@@ -59,7 +59,7 @@ def read_input_cvrp(filename):
                 sys.exit(1)
         elif token == "NODE_COORD_SECTION":
             break
-    print(nb_nodes)
+
     customers_x = [None] * nb_customers
     customers_y = [None] * nb_customers
     depot_x = 0
