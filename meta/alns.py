@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from problems import definitions
+from problems.cvrp import Cvrp, CvrpState
 
 
 @dataclass
@@ -13,8 +14,8 @@ class StateTransition:
     Holds two states to define a new type with named parameters (old and new state) to be semantically acessed
     """
 
-    old_state: definitions.ProblemDefinition.state
-    new_state: definitions.ProblemDefinition.state
+    old_state: CvrpState
+    new_state: CvrpState
 
 
 class LambdaWeights:
@@ -81,18 +82,18 @@ class ALNSIter:
     Implements destroy and repair methods to be used on ALNS.
 
         Lista de heuristicas de destruição
-                '"Iterable[Callable[[float, definitions.ProblemDefinition.state], definitions.ProblemDefinition.state]],"
+                '"Iterable[Callable[[float, Cvrp], Cvrp]],"
                 Uma lista de funções que irão executar a heuristica. Tem como parametro é dado o grafo valido onde a heuristica 
                 sera aplicada e um float representado o grau de distruibuição que será aplicado a nesse grafo pela heurística.
                 A 'função deverá retornar um grafo inválido  (ou seja, com nós não conectados).
 
         Lista de heuristicas de reparação
-                "repair_heuristics: Iterable[Callable[[definitions.ProblemDefinition.state], definitions.ProblemDefinition.state]]"
+                "repair_heuristics: Iterable[Callable[[Cvrp], Cvrp]]"
                 Uma  lista de funções que irão executar a heuristica de reparação. Tem como parametro o grafo inválido (ou seja, com 
                 nós não conectados) a ser reparado. Tem como saida um grafo reparado, ou seja válido.
 
         Função que avalia um solução (grafo apos ser destruido e reparado)
-                "scoring_function: Callable[[definitions.ProblemDefinition.state], float]"
+                "scoring_function: Callable[[Cvrp], float]"
                 Uma função que ira avaliar um dado grafo. Tem como entrada um grafo válido. Tem como saida um float
                 representando o quão bom é o grafo/solução  apresentado segundo  algum critério estabelecido.
 
@@ -108,10 +109,10 @@ class ALNSIter:
 
     def __init__(
         self,
-        destroy_heuristics: Iterable[Callable[[float, definitions.ProblemDefinition.state], definitions.ProblemDefinition.state]],
-        repair_heuristics: Iterable[Callable[[definitions.ProblemDefinition.state], definitions.ProblemDefinition.state]],
-        scoring_function: Callable[[definitions.ProblemDefinition.state], float],
-        acceptance_function: Callable[[StateTransition], bool],
+        destroy_heuristics: Iterable[Callable[[float, Cvrp, CvrpState], CvrpState]],
+        repair_heuristics: Iterable[Callable[[CvrpState, Cvrp], CvrpState]],
+        scoring_function: Callable[[CvrpState, Cvrp], float],
+        acceptance_function: Callable[[StateTransition, Cvrp], bool],
         prob_parameters: ALNSProbParameters,
     ):
         if not destroy_heuristics or not repair_heuristics:
@@ -129,7 +130,10 @@ class ALNSIter:
         self.current_state = None
         self.prob_parameters = prob_parameters
 
-    def _destroy(self, destruction_parameter: float, state: definitions.ProblemDefinition.state) -> definitions.ProblemDefinition.state:
+    def _destroy(
+        self, destruction_parameter: float, 
+        state: CvrpState, cvrp_config: Cvrp
+        ) -> CvrpState:
         """
         Selects a destroy heuristic at random, use it to deconstruct given state
         and returns an incomplete state and the index of the utilized heuristic
@@ -141,10 +145,10 @@ class ALNSIter:
         dh_func_idx = np.random.choice(
             len(self.destroy_heuristics), p=self.prob_parameters.destroy_prob)
         dh_func = self.destroy_heuristics[dh_func_idx]
-        incomplete_state = dh_func(destruction_parameter, state)
+        incomplete_state = dh_func(destruction_parameter, state, cvrp_config)
         return incomplete_state, dh_func_idx
 
-    def _repair(self, state: definitions.ProblemDefinition.state) -> definitions.ProblemDefinition.state:
+    def _repair(self, state: CvrpState, cvrp_config: Cvrp) -> CvrpState:
         """
         Selects a repair heuristic at random, use it to reconstruct an incomplete
         state and returns the new state
@@ -152,7 +156,7 @@ class ALNSIter:
         rh_func_idx = np.random.choice(
             len(self.destroy_heuristics), p=self.prob_parameters.destroy_prob)
         rh_func = self.repair_heuristics[rh_func_idx]
-        new_state = rh_func(state)
+        new_state = rh_func(state, cvrp_config)
         return new_state, rh_func_idx
 
     def update_heuristics_probabilities(self, prob_parameters: ALNSProbParameters):
@@ -213,14 +217,19 @@ class ALNSIter:
             prob_parameters.repair_prob[unused_repair_mask]
         )
 
-    def do_alns_iteraction(self, destruction_parameter: float, state: definitions.ProblemDefinition.state) -> definitions.ProblemDefinition.state:
+    def do_alns_iteraction(
+        self,
+        destruction_parameter: float,
+        state: CvrpState,
+        cvrp_config: Cvrp
+        ) -> CvrpState:
         """
         Do one iteraction of ALNS with destroy and repair heuristics given to class object. Returns new state.
         """
         incomplete_state, dh_idx = self._destroy(
-            destruction_parameter, state)  # retorna estadoincompleto/grafo incompleto e indice da heuristtica
+            destruction_parameter, state, cvrp_config)  # retorna estadoincompleto/grafo incompleto e indice da heuristtica
         # novo estado completo/grafo completo e o indice da heuristica utilizada
-        new_state, rh_idx = self._repair(incomplete_state)
+        new_state, rh_idx = self._repair(incomplete_state, cvrp_config)
         # irá retornar o quão bom é o novo  grafo segundo algum critério
         new_state_score = self.scoring_function(new_state)
         current_state_score = self.scoring_function(self.current_state)
