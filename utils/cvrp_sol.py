@@ -49,7 +49,7 @@ class Cvrp_sol:
                 else:
                     current_truck_capacity = 0
                     self.routes.append(new_route)
-                    print(new_route)
+                    # print(new_route)
                     # return
                     new_route = []
                     new_route.append(int(current_city))
@@ -57,9 +57,9 @@ class Cvrp_sol:
 
             previous_city = current_city
         self.routes.append(new_route)
-        print(new_route)
+        # print(new_route)
         self.calc_cost(problem)
-        print(self.cost)
+        # print(self.cost)
             
 
     # Calcula o custo de uma dada solução

@@ -18,12 +18,12 @@ def main(instance_file):
     cvrp_state = Cvrp_state(cvrp_test)
     cvrp_sol = Cvrp_sol([], 0)
     cvrp_sol.state_to_sol(cvrp_test, cvrp_state)
-    # heuristics.destruction.random_destroyer(cvrp_test,cvrp_state)
-    heuristics.destruction.worst_destroyer(cvrp_test, cvrp_state, 5)
+    # heuristics.destruction.random_destroyer(cvrp_test,cvrp_state, 30)
+    # heuristics.destruction.worst_destroyer(cvrp_test, cvrp_state, 50)
 
-    # routes, const = Cvrp_sol_factory.factory(sol_file)
-    # test_crvp_sol = Cvrp_sol(routes,const)
-    # print(test_crvp_sol)
+    routes, const = Cvrp_sol_factory.factory(sol_file)
+    test_crvp_sol = Cvrp_sol(routes,const)
+    print(test_crvp_sol)
     # print(cvrp_sol)
 
     

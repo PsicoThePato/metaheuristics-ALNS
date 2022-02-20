@@ -11,18 +11,26 @@ def random_destroyer ( problem: Cvrp, state: Cvrp_state, intensity: int  ):
     if intensity == 0:
         return
     intensity = int(intensity/100 * len(state.sol_path))
-    print(state.sol_path)
-    for _ in range(intensity):
-        i = int(random.randrange(0, intensity) - 1)
+    # print(state.sol_path)
+    loop = random.sample(range(0,intensity), intensity)
+    for i in loop:
+        
+        state.deleted_cities.append(state.sol_path[i])
+        state.deleted_cities_index.append(i)
         state.sol_path = np.delete(state.sol_path, i)
-    print(state.sol_path)
+
+    print("Cidades removidas: ",state.deleted_cities)
+    print("Index das cidades removidas: ",state.deleted_cities_index)
+    print("Vetor de cidades após remoção: ",state.sol_path)
 
 
     # print(sol.routes)
 
 def worst_destroyer ( problem: Cvrp, state: Cvrp_state, intensity: float):
+    
     if intensity == 0:
         return
+    print(state.sol_path)
     intensity = int(intensity/100 * len(state.sol_path))
     state_distance = []
     previus_city = state.sol_path[0]
@@ -33,14 +41,25 @@ def worst_destroyer ( problem: Cvrp, state: Cvrp_state, intensity: float):
     state_distance_aux = state_distance.copy()
     state_distance.sort()
     print(state.sol_path)
-    print(state_distance)
-    print(state_distance_aux)
+    print("Lista de distâncias entre cidades: ",state_distance_aux)
+    print("Lista de distâncias entre cidades ordenada: ",state_distance)
 
     for i in range(intensity):
+        # o "-i-1" serve para evitar o valor 0, pois o for irá percorrer de 0 a intensity a princípio
         # print(state_distance[-i-1]) # Percorre os valores do maior para o menor
-        # print(state_distance_aux.index(state_distance[-i])) #pega o index do mesmo na lista original de distancias
-        # print(state.sol_path[state_distance_aux.index(state_distance[-i])]) # o index se refere a um vertice na tsp(state do problema)
-        np.delete(state.sol_path, state_distance_aux.index(state_distance[-i]))
+        # print(state_distance_aux.index(state_distance[-i-1])) #pega o index do mesmo na lista original de distancias
+        # print(state.sol_path[state_distance_aux.index(state_distance[-i-1])]) # o index se refere a um vertice na tsp(state do problema)
+        index_deleted = state_distance_aux.index(state_distance[-i-1])
+        value_deleted = state.sol_path[index_deleted]
+        state.deleted_cities_index.append(index_deleted) # guarda o index do valor removido
+        state.deleted_cities.append(value_deleted) # guarda valor removido
+
+        np.delete(state.sol_path, index_deleted)
+        state_distance_aux[index_deleted] = -1 # uma vez q a cidade é removida a distância tb deve ser removida
+        # pois não será mais usada, porém sua posição deve ser preservada para não adulterar as demais posições.
+        # por isso é atribuido um valor negativo, pois não haverá cidades de valor negativo.
         # print("\n")
-    print(state.sol_path)
+    print("Cidades removidas: ",state.deleted_cities)
+    print("Index das cidades removidas: ",state.deleted_cities_index)
+    print("Vetor de cidades após remoção: ",state.sol_path)
 

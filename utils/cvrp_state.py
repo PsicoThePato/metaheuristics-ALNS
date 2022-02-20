@@ -23,6 +23,8 @@ class Cvrp_state:
         salesman_array = random.sample(range(cvrp_input.nb_citys), cvrp_input.nb_citys)
         print(salesman_array)
         self.sol_path = np.array(salesman_array)
+        self.deleted_cities = []
+        self.deleted_cities_index = []
     
     def get_cvrp_sol(self, cvrp_input: Cvrp) -> np.ndarray:
         """
