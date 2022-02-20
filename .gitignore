@@ -130,4 +130,5 @@ dmypy.json
 
 *.vrp
 *.sol
+*.ps
 heuristica/*
