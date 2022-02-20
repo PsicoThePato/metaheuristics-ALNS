@@ -30,8 +30,8 @@ class Cvrp:
 
     def __init__(self, path: str):
         self._file_path = path
-        # CvrpState
-        self.state = None
+        # Distance between cities
+        self.distance_matrix = None
         # np.ndarray[CityNode]
         self.cities = None
         # int
