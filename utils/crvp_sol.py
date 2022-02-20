@@ -27,19 +27,30 @@ class crvp_sol:
         s += "\n"
         return s
 
+    # Calcula o custo de uma dada solução
+    # Os vários "int()" são para converter o conteúdo da lista de string para interios
+    # Os vários "-1" são para corrigir os valores, pois as cidades são numeradas de 1 a n
+    # enquanto vetores em python são contados de 0 a 30.
     def calc_cost(self, problem: crvp):
         cost = 0
-        print(self.routes)
+        # print(self.routes)
         for route in self.routes:
-            first_city = int(route.pop(0))
-            last_city = int(route.pop(len(route)-1))
-            cost += problem.compute_distance_warehouses(first_city)
+            first_city = int(route[0]) - 1
+            last_city_index = int(len(route))-1
+            last_city = int(route[last_city_index]) -1
 
-            last_city = route.pop(0)
-            for current_city in route:
-                cost += problem.compute_distance_cities(int(last_city), int(current_city))
-                last_city = int(current_city)
+            if(first_city != last_city):
+                previous_city = first_city
+                for current_city in route:
+                    current_city = int(current_city)- 1
+                    cost += problem.compute_distance_cities(int( previous_city), int(current_city))
+                    previous_city = current_city
+            
+            cost += problem.compute_distance_warehouses(first_city)
             cost += problem.compute_distance_warehouses(last_city)
+            # return
         
-        print(cost)
+        # print(cost)
+        self.cost = cost
+        return cost
 

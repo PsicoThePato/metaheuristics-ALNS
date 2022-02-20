@@ -46,7 +46,9 @@ class crvp:
 
     # Retorna distância entre uma "city1" e "city2"
     def compute_distance_cities(self, index_city1: int, index_city2: int):
-        print(index_city1, index_city2)
+        # print(index_city1, index_city2)
+        # print(self.distance_matrix[index_city1])
+        # print(self.distance_matrix[index_city1][index_city2])
         return self.distance_matrix[index_city1][index_city2]
     
 
