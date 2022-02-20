@@ -14,7 +14,7 @@ def read_input_cvrp_sol(filename):
     while(1):   
         while(1):
             token= next(file_it)
-            if token == "Route" or token == "cost": 
+            if token == "Route" or token == "Cost": 
                 break
             if "#" in token: # ignora #<numero da rota>:
                 continue
@@ -23,7 +23,7 @@ def read_input_cvrp_sol(filename):
         # print(token)
         # print(route)
         route = []
-        if(token == "cost"):
+        if(token == "Cost"):
             cost = next(file_it) # Pega o custo da solução passada
             break
 

@@ -133,3 +133,4 @@ dmypy.json
 *.ps
 heuristica/*
 env-heuristica/*
+instances/*

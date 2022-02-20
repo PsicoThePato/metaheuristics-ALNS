@@ -3,7 +3,7 @@ import math
 # import string as str
 
 
-class crvp:
+class Cvrp:
     """
     """
 

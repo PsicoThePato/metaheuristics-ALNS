@@ -1,24 +1,32 @@
 import sys
 import math
 # sys.path.append('./')
-from utils.crvp import crvp
+from utils.cvrp import Cvrp
 import utils.cvrp_factory as cvrp_factory
-from utils.crvp_sol import crvp_sol
-import utils.crvp_sol_factory as crvp_sol_factory
-import destruction_heuristics.random_destroyer as rd
+from utils.cvrp_sol import Cvrp_sol
+import utils.cvrp_sol_factory as Cvrp_sol_factory
+from utils.cvrp_state import Cvrp_state 
+import heuristics.destruction
 
 
 def main(instance_file):
     print(instance_file)
     print(sol_file)
     nb_customers, truck_capacity, distance_matrix, distance_warehouses, demands, nb_trucks = cvrp_factory.factory(instance_file, 0, 0, 0)
-    test_crvp = crvp(nb_customers, truck_capacity, distance_matrix, distance_warehouses, demands, nb_trucks)
-    routes, const = crvp_sol_factory.factory(sol_file)
-    test_crvp_sol = crvp_sol(routes,const)
-    # print(test_crvp)
+    cvrp_test = Cvrp(nb_customers, truck_capacity, distance_matrix, distance_warehouses, demands, nb_trucks)
+    # print(cvrp_test)
+    cvrp_state = Cvrp_state(cvrp_test)
+    cvrp_sol = Cvrp_sol([], 0)
+    cvrp_sol.state_to_sol(cvrp_test, cvrp_state)
+    # heuristics.destruction.random_destroyer(cvrp_test,cvrp_state)
+    heuristics.destruction.worst_destroyer(cvrp_test, cvrp_state, 5)
+
+    # routes, const = Cvrp_sol_factory.factory(sol_file)
+    # test_crvp_sol = Cvrp_sol(routes,const)
     # print(test_crvp_sol)
-    # rd.random_destroyer(2,test_crvp, test_crvp_sol)
-    test_crvp_sol.calc_cost(test_crvp)
+    # print(cvrp_sol)
+
+    
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
