@@ -77,7 +77,7 @@ class Cvrp:
 
 
 if __name__ == '__main__':
-    obj = Cvrp("problems/data/A/A-n32-k5.vrp")
+    obj = Cvrp("problems/data/auguret/A-n32-k5.vrp")
     obj.read_from_file()
     # print("############")
     # print(obj.cities)
