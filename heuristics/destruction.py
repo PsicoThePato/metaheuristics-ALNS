@@ -7,9 +7,11 @@ import random
 import numpy as np
 
 
-def random_destroyer ( problem: Cvrp, state: Cvrp_state, intensity: int  ):
+def random_destroyer ( problem: Cvrp, state: Cvrp_state, intensity: float  ):
     if intensity == 0:
         return
+    state.deleted_cities = []
+    state.deleted_cities_index = []
     intensity = int(intensity/100 * len(state.sol_path))
     # print(state.sol_path)
     loop = random.sample(range(0,intensity), intensity)
@@ -17,7 +19,7 @@ def random_destroyer ( problem: Cvrp, state: Cvrp_state, intensity: int  ):
         
         state.deleted_cities.append(state.sol_path[i])
         state.deleted_cities_index.append(i)
-        state.sol_path = np.delete(state.sol_path, i)
+        state.sol_path[i] = -1
 
     print("Cidades removidas: ",state.deleted_cities)
     print("Index das cidades removidas: ",state.deleted_cities_index)
@@ -30,6 +32,9 @@ def worst_destroyer ( problem: Cvrp, state: Cvrp_state, intensity: float):
     
     if intensity == 0:
         return
+    state.deleted_cities = []
+    state.deleted_cities_index = []
+    
     print(state.sol_path)
     intensity = int(intensity/100 * len(state.sol_path))
     state_distance = []
@@ -54,7 +59,7 @@ def worst_destroyer ( problem: Cvrp, state: Cvrp_state, intensity: float):
         state.deleted_cities_index.append(index_deleted) # guarda o index do valor removido
         state.deleted_cities.append(value_deleted) # guarda valor removido
 
-        np.delete(state.sol_path, index_deleted)
+        state.sol_path[index_deleted] = -1
         state_distance_aux[index_deleted] = -1 # uma vez q a cidade é removida a distância tb deve ser removida
         # pois não será mais usada, porém sua posição deve ser preservada para não adulterar as demais posições.
         # por isso é atribuido um valor negativo, pois não haverá cidades de valor negativo.

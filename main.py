@@ -7,6 +7,7 @@ from utils.cvrp_sol import Cvrp_sol
 import utils.cvrp_sol_factory as Cvrp_sol_factory
 from utils.cvrp_state import Cvrp_state 
 import heuristics.destruction
+import heuristics.reconstruction
 
 
 def main(instance_file):
@@ -19,11 +20,17 @@ def main(instance_file):
     cvrp_sol = Cvrp_sol([], 0)
     cvrp_sol.state_to_sol(cvrp_test, cvrp_state)
     # heuristics.destruction.random_destroyer(cvrp_test,cvrp_state, 30)
-    # heuristics.destruction.worst_destroyer(cvrp_test, cvrp_state, 50)
+    heuristics.destruction.worst_destroyer(cvrp_test, cvrp_state, 50)
+    # heuristics.reconstruction.random_constructor(cvrp_test, cvrp_state)
+    heuristics.reconstruction.greedy_constructor(cvrp_test, cvrp_state)
+    print(cvrp_sol)
+    cvrp_sol.state_to_sol(cvrp_test, cvrp_state)
+    print(cvrp_sol)
 
-    routes, const = Cvrp_sol_factory.factory(sol_file)
-    test_crvp_sol = Cvrp_sol(routes,const)
-    print(test_crvp_sol)
+    # routes, const = Cvrp_sol_factory.factory(sol_file)
+    # test_crvp_sol = Cvrp_sol(routes,const)
+    # print(test_crvp_sol)
+
     # print(cvrp_sol)
 
     

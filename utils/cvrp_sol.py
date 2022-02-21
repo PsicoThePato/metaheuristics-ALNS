@@ -31,11 +31,11 @@ class Cvrp_sol:
     def state_to_sol(self, problem: Cvrp, state: Cvrp_state):
         warehouse = 0 # O caminhão inicia do galpão
         previous_city = 0
+        self.routes = [] # no momento, um mesmo objeto solução é usado para calcular o custo
         new_route = []
         current_truck_capacity = 0
         max_truck_capacity = problem.truck_capacity
         cost = 0
-        
         for current_city in state.sol_path:
             if new_route == []:
                 new_route.append(int(current_city))
