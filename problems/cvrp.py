@@ -32,8 +32,8 @@ class Cvrp:
 
     def __init__(self, path):
         self._file_path = path
-        # CvrpState
-        self.state = None
+        # np.ndarray[np.ndarray[float]]
+        self.city_distance_matrix = None
         # np.ndarray[CityNode]
         self.cities = None
         # int
@@ -56,6 +56,7 @@ class Cvrp:
             self.problem_name = next(attribute_gen)
             dimension = int(next(attribute_gen))
             self.cities = np.empty(dimension, dtype=object)
+            self.city_distance_matrix = np.empty(shape=(dimension, dimension), dtype=object)
             self.truck_capacity = int(next(attribute_gen))
 
             # creates cities without their demand information
@@ -77,7 +78,7 @@ class Cvrp:
 
 
 if __name__ == '__main__':
-    obj = Cvrp("problems/data/A/A-n32-k5.vrp")
+    obj = Cvrp("problems/data/auguret/A-n32-k5.vrp")
     obj.read_from_file()
     print("############")
     print(obj.cities)
