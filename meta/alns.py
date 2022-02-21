@@ -6,7 +6,7 @@ import numpy as np
 
 from problems import definitions
 from problems.cvrp import Cvrp, CvrpState
-
+import copy
 
 @dataclass
 class StateTransition:
@@ -219,36 +219,51 @@ class ALNSIter:
 
     def do_alns_iteraction(
         self,
-        destruction_parameter: float,
+        destruction_parameter: float, # passar porcentage, tipo 50 equivale a 50%
         state: CvrpState,
         cvrp_config: Cvrp
         ) -> CvrpState:
         """
         Do one iteraction of ALNS with destroy and repair heuristics given to class object. Returns new state.
         """
+        if self.current_state != None:
+            state = self.current_state
+
+            
         incomplete_state, dh_idx = self._destroy(
-            destruction_parameter, state, cvrp_config)  # retorna estadoincompleto/grafo incompleto e indice da heuristtica
+            # retorna estadoincompleto/grafo incompleto e indice da heuristtica
+            destruction_parameter, state, cvrp_config)  
         # novo estado completo/grafo completo e o indice da heuristica utilizada
         new_state, rh_idx = self._repair(incomplete_state, cvrp_config)
         # irá retornar o quão bom é o novo  grafo segundo algum critério
-        new_state_score = self.scoring_function(new_state)
-        current_state_score = self.scoring_function(self.current_state)
+        new_state_score = self.scoring_function(new_state, cvrp_config)
+        current_state_score = self.scoring_function(self.current_state, cvrp_config)
         # irá  retornar um booleando dizendo se a nova solução foi aceita
+        
         isaccepted = self.acceptance_function(
-            StateTransition(self.current_state, new_state))
+            [self.current_state, new_state],
+            cvrp_config)
         success_increment = 0
+        # print("isaccepted ", isaccepted)
+        # return
 
         # Atualiza o estado atual caso o novo estado tenha sido aceito
         if isaccepted:
             self.current_state = new_state
             success_increment = self.prob_parameters.lambda_weights.accepted_state_weight
 
+           
             # Define o incremento segundo o  caso o novo estado apresente melhor pontuação
         if new_state_score < current_state_score:
             success_increment = self.prob_parameters.lambda_weights.improved_state_weight
 
-        if new_state_score < self.scoring_function(self.best_state):
-            self.best_state = new_state
+        
+        if new_state_score < self.scoring_function(self.best_state, cvrp_config):
+            # print(new_state_score, self.scoring_function(self.best_state, cvrp_config))
+            # print("---------------TEST-----------")
+            # exit(1)
+            # return
+            self.best_state = copy.deepcopy(new_state)
             success_increment = self.prob_parameters.lambda_weights.best_state_weight
 
         self.prob_parameters.destroy_heuristics_sucess[dh_idx] += success_increment

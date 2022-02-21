@@ -7,14 +7,15 @@ from utils.cvrp_state import Cvrp_state
 import random
 import numpy as np
 
-def random_constructor (problem: Cvrp, state: Cvrp_state):
+def random_constructor (state: Cvrp_state, problem: Cvrp):
     for city in state.deleted_cities:
         remove_index = state.deleted_cities_index.pop(random.randrange(len(state.deleted_cities_index)))
         state.sol_path[remove_index] = city
+    return state
     
     # print(state.sol_path)
 
-def greedy_constructor (problem: Cvrp, state: Cvrp_state):
+def greedy_constructor (state: Cvrp_state, problem: Cvrp):
     best_cost = 999999
     current_cost = 0
     selected_index = 0
@@ -44,8 +45,9 @@ def greedy_constructor (problem: Cvrp, state: Cvrp_state):
             current_cost = 0
         state.deleted_cities_index.remove(selected_index)
         best_cost = 99999
-        print()
+        # print()
         
 
-    print("deleted index: ",state.deleted_cities_index)
-    print("state tsp: ", state.sol_path)
+    # print("deleted index: ",state.deleted_cities_index)
+    # print("state tsp: ", state.sol_path)
+    return state

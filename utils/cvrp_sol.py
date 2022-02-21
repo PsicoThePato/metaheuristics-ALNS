@@ -29,13 +29,17 @@ class Cvrp_sol:
         return s
 
     def state_to_sol(self, problem: Cvrp, state: Cvrp_state):
+        
+        self.routes = [] # no momento, um mesmo objeto solução é usado para calcular o custo
+        cost = 0
+        if state == None: return
+        
         warehouse = 0 # O caminhão inicia do galpão
         previous_city = 0
-        self.routes = [] # no momento, um mesmo objeto solução é usado para calcular o custo
         new_route = []
         current_truck_capacity = 0
         max_truck_capacity = problem.truck_capacity
-        cost = 0
+
         for current_city in state.sol_path:
             if new_route == []:
                 new_route.append(int(current_city))
@@ -58,7 +62,7 @@ class Cvrp_sol:
             previous_city = current_city
         self.routes.append(new_route)
         # print(new_route)
-        self.calc_cost(problem)
+        # self.calc_cost(problem)
         # print(self.cost)
             
 
@@ -66,8 +70,13 @@ class Cvrp_sol:
     # Os vários "int()" são para converter o conteúdo da lista de string para interios
     # Os vários "-1" são para corrigir os valores, pois as cidades são numeradas de 1 a n
     # enquanto vetores em python são contados de 0 a 30.
-    def calc_cost(self, problem: Cvrp ):
-        cost = 0
+    def calc_cost(self, state: Cvrp_state, problem: Cvrp ):        
+        
+        self.state_to_sol(problem, state)
+        if self.cost == 0: 
+            return 0
+
+        cost:float = 0
         # print(self.routes)
         for route in self.routes:
             first_city = int(route[0]) - 1
@@ -89,3 +98,63 @@ class Cvrp_sol:
         self.cost = cost
         return cost
 
+def calc_cost_func(state: Cvrp_state, problem: Cvrp ):        
+       
+        if state == None: return 999999
+        cvrp_sol = Cvrp_sol([], 0)
+        cvrp_sol.state_to_sol(problem, state)
+
+        cost:float = 0
+        # print(cvrp_sol.routes)
+        for route in cvrp_sol.routes:
+            first_city = int(route[0]) - 1
+            last_city_index = int(len(route))-1
+            last_city = int(route[last_city_index]) -1
+
+            if(first_city != last_city):
+                previous_city = first_city
+                for current_city in route:
+                    current_city = int(current_city)- 1
+                    cost += problem.compute_distance_cities(
+                        int( previous_city), int(current_city))
+                    previous_city = current_city
+            
+            cost += problem.compute_distance_warehouses(first_city)
+            cost += problem.compute_distance_warehouses(last_city)
+            # return
+        
+        # print(cost)
+        cvrp_sol.cost = cost
+        return cost
+
+def calc_cost_func2(state: Cvrp_state, problem: Cvrp ):        
+       
+        if state == None: return 999999
+        cvrp_sol = Cvrp_sol([], 0)
+        cvrp_sol.state_to_sol(problem, state)
+
+        cost:float = 0
+        # print(cvrp_sol.routes)
+        for route in cvrp_sol.routes:
+            first_city = int(route[0]) - 1
+            last_city_index = int(len(route))-1
+            last_city = int(route[last_city_index]) -1
+
+            if(first_city != last_city):
+                previous_city = first_city
+                for current_city in route:
+                    current_city = int(current_city)- 1
+                    cost += problem.compute_distance_cities(
+                        int( previous_city), int(current_city))
+                    previous_city = current_city
+            
+            cost += problem.compute_distance_warehouses(first_city)
+            cost += problem.compute_distance_warehouses(last_city)
+            # return
+        
+        # print(cost)
+        cvrp_sol.cost = cost
+
+        print(cvrp_sol)
+
+        return cost

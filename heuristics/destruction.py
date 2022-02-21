@@ -7,7 +7,7 @@ import random
 import numpy as np
 
 
-def random_destroyer ( problem: Cvrp, state: Cvrp_state, intensity: float  ):
+def random_destroyer (intensity: float, state: Cvrp_state, problem: Cvrp,):
     if intensity == 0:
         return
     state.deleted_cities = []
@@ -21,21 +21,22 @@ def random_destroyer ( problem: Cvrp, state: Cvrp_state, intensity: float  ):
         state.deleted_cities_index.append(i)
         state.sol_path[i] = -1
 
-    print("Cidades removidas: ",state.deleted_cities)
-    print("Index das cidades removidas: ",state.deleted_cities_index)
-    print("Vetor de cidades após remoção: ",state.sol_path)
+    # print("Cidades removidas: ",state.deleted_cities)
+    # print("Index das cidades removidas: ",state.deleted_cities_index)
+    # print("Vetor de cidades após remoção: ",state.sol_path)
+    return state
 
 
     # print(sol.routes)
 
-def worst_destroyer ( problem: Cvrp, state: Cvrp_state, intensity: float):
+def worst_destroyer (intensity: float, state: Cvrp_state, problem: Cvrp,):
     
     if intensity == 0:
         return
     state.deleted_cities = []
     state.deleted_cities_index = []
     
-    print(state.sol_path)
+    # print(state.sol_path)
     intensity = int(intensity/100 * len(state.sol_path))
     state_distance = []
     previus_city = state.sol_path[0]
@@ -45,9 +46,9 @@ def worst_destroyer ( problem: Cvrp, state: Cvrp_state, intensity: float):
 
     state_distance_aux = state_distance.copy()
     state_distance.sort()
-    print(state.sol_path)
-    print("Lista de distâncias entre cidades: ",state_distance_aux)
-    print("Lista de distâncias entre cidades ordenada: ",state_distance)
+    # print(state.sol_path)
+    # print("Lista de distâncias entre cidades: ",state_distance_aux)
+    # print("Lista de distâncias entre cidades ordenada: ",state_distance)
 
     for i in range(intensity):
         # o "-i-1" serve para evitar o valor 0, pois o for irá percorrer de 0 a intensity a princípio
@@ -64,7 +65,8 @@ def worst_destroyer ( problem: Cvrp, state: Cvrp_state, intensity: float):
         # pois não será mais usada, porém sua posição deve ser preservada para não adulterar as demais posições.
         # por isso é atribuido um valor negativo, pois não haverá cidades de valor negativo.
         # print("\n")
-    print("Cidades removidas: ",state.deleted_cities)
-    print("Index das cidades removidas: ",state.deleted_cities_index)
-    print("Vetor de cidades após remoção: ",state.sol_path)
+    # print("Cidades removidas: ",state.deleted_cities)
+    # print("Index das cidades removidas: ",state.deleted_cities_index)
+    # print("Vetor de cidades após remoção: ",state.sol_path)
 
+    return state

@@ -27,59 +27,60 @@ class CvrpState:
 
 class Cvrp:
     """
-    Cvrp specific attributes
     """
 
-    def __init__(self, path):
-        self._file_path = path
-        # CvrpState
-        self.state = None
-        # np.ndarray[CityNode]
-        self.cities = None
-        # int
-        self.depot_id = None
-        # int
-        self.truck_capacity = None
-        # str
-        self.problem_name = None
+    def __init__(
+		self,
+		nb_citys,
+		truck_capacity,
+		distance_matrix,
+		distance_warehouses,
+		demands,
+		nb_trucks,
+	):
+         self.nb_citys = nb_citys
+         self.truck_capacity = truck_capacity
+         #distancia entre as cidades, arestas da matrix
+         self.distance_matrix = distance_matrix 
+         self.distance_warehouses = distance_warehouses
+         self.demands = demands
+         self.nb_trucks = nb_trucks
 
-    def read_from_file(self) -> None:
-        """
-        Reads file and set Cvrp attributes
-        """
+    def __str__(self):
+        s = "Entrada:\n"
+        s += "      Cidades atendidas: " + str(self.nb_citys) + "\n" 
+        s += "      Número de caminhões:  " + str(self.nb_trucks) + "\n"
+        s += "      Capacidade máxima: " + str(self.truck_capacity) + "\n"
+        s += "      Distâncias entre cidades: \n"
+        for x in self.distance_matrix:
+            s += "            "  + str(x)
+            s += "\n"
+        #    print (x, " ", len(distance_matrix))
+        # print("Total de membros da distance matrix: ", len(distance_matrix))
+        
+        s += "      Demanda das cidades: " + str(self.demands) + " " + str(len(self.demands)) + "\n"
+        s += "      Distâncias entre as cidades e o depósito: " + str(self.distance_warehouses) + " "  + str(len(self.distance_warehouses))
+        s += "\n"
+        return s
 
-        with open(self._file_path, "r", encoding="utf-8") as file_pointer:
-           # header attributes
-            header_raw_text = list(islice(file_pointer, 7))
-            header_text_attributes = [header_raw_text[0].strip()] + [header_raw_text[3].strip()] + [header_raw_text[5].strip()]
-            attribute_gen = map(lambda line: line.split(': ')[-1], header_text_attributes)
-            self.problem_name = next(attribute_gen)
-            dimension = int(next(attribute_gen))
-            self.cities = np.empty(dimension, dtype=object)
-            self.truck_capacity = int(next(attribute_gen))
+    def compute_distance_warehouses(self, index: int):
+        return self.distance_warehouses[index]
 
-            # creates cities without their demand information
-            empty_city_space = 0
-            while ((line := file_pointer.readline().strip()) != "DEMAND_SECTION"):
-                parsed_line = line.split()
-                id, x_coord, y_coord = parsed_line
-                self.cities[empty_city_space] = CityNode(id, x_coord, y_coord)
-                empty_city_space = empty_city_space + 1
+    # Retorna distância entre uma "city1" e "city2"
+    def compute_distance_cities(self, index_city1: int, index_city2: int):
+        # print(index_city1, index_city2)
+        # print(self.distance_matrix[index_city1])
+        # print(self.distance_matrix[index_city1][index_city2])
+        return self.distance_matrix[index_city1][index_city2]
+    
 
-            # adds demands on coties
-            undemanding_city = 0
-            while ((line := file_pointer.readline().strip()) != "DEPOT_SECTION"):
-                _, city_demand = line.split()
-                self.cities[undemanding_city].demand = city_demand
-                undemanding_city = undemanding_city + 1
-
-            self.depot_id = int(file_pointer.readline())
 
 
 if __name__ == '__main__':
     obj = Cvrp("problems/data/A/A-n32-k5.vrp")
     obj.read_from_file()
-    print("############")
-    print(obj.cities)
-    print(obj.depot_id)
-    print(obj.truck_capacity)
+    # print("############")
+    # print(obj.cities)
+    # print(obj.depot_id)
+    # print(obj.truck_capacity)
+
