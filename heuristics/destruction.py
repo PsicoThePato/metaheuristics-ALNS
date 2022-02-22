@@ -9,12 +9,16 @@ import numpy as np
 
 def random_destroyer (intensity: float, state: Cvrp_state, problem: Cvrp,):
     if intensity == 0:
-        return
+        return state
     state.deleted_cities = []
+    # print("Random intensity:",intensity, " ", len(state.sol_path))
+    # print("Random intensity2:", (intensity * len(state.sol_path)))
     state.deleted_cities_index = []
-    intensity = int(intensity/100 * len(state.sol_path))
+    intensity = int(intensity * len(state.sol_path))
+    # print("Random intensity2:",intensity)
     # print(state.sol_path)
-    loop = random.sample(range(0,intensity), intensity)
+    loop = random.sample(range(0,len(state.sol_path)), intensity)
+    # print("loop: ",loop)
     for i in loop:
         
         state.deleted_cities.append(state.sol_path[i])
@@ -30,14 +34,17 @@ def random_destroyer (intensity: float, state: Cvrp_state, problem: Cvrp,):
     # print(sol.routes)
 
 def worst_destroyer (intensity: float, state: Cvrp_state, problem: Cvrp,):
-    
+    # print("worst intensity:",intensity, " ", len(state.sol_path))
+    # print("worst intensity2:", (intensity * len(state.sol_path)))
     if intensity == 0:
         return
     state.deleted_cities = []
     state.deleted_cities_index = []
-    
+    # print("Worst intensity0:",intensity)
+    # print("Worst intensity:", intensity, " ", len(state.sol_path))
     # print(state.sol_path)
-    intensity = int(intensity/100 * len(state.sol_path))
+    intensity = int(intensity * len(state.sol_path))
+    # print("Worst intensity2:",intensity)
     state_distance = []
     previus_city = state.sol_path[0]
     for current_city in state.sol_path[1:]:

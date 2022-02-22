@@ -145,6 +145,7 @@ class ALNSIter:
         dh_func_idx = np.random.choice(
             len(self.destroy_heuristics), p=self.prob_parameters.destroy_prob)
         dh_func = self.destroy_heuristics[dh_func_idx]
+        # print("destruction_parameter", destruction_parameter)
         incomplete_state = dh_func(destruction_parameter, state, cvrp_config)
         return incomplete_state, dh_func_idx
 
@@ -153,10 +154,15 @@ class ALNSIter:
         Selects a repair heuristic at random, use it to reconstruct an incomplete
         state and returns the new state
         """
+        # print("\n-----REPAIR----")
+        # print("Estado quebrado: ", state.sol_path)
         rh_func_idx = np.random.choice(
             len(self.destroy_heuristics), p=self.prob_parameters.destroy_prob)
         rh_func = self.repair_heuristics[rh_func_idx]
         new_state = rh_func(state, cvrp_config)
+        # print("Estado Não quebrado: ", new_state.sol_path)
+        # print("\n\n")
+        # exit(1)
         return new_state, rh_func_idx
 
     def update_heuristics_probabilities(self, prob_parameters: ALNSProbParameters):
@@ -229,12 +235,15 @@ class ALNSIter:
         if self.current_state != None:
             state = self.current_state
 
-            
+        # print("State: ",state.sol_path)    
+        
         incomplete_state, dh_idx = self._destroy(
             # retorna estadoincompleto/grafo incompleto e indice da heuristtica
             destruction_parameter, state, cvrp_config)  
+        # print("--------incomplete_state:", incomplete_state.sol_path)
         # novo estado completo/grafo completo e o indice da heuristica utilizada
         new_state, rh_idx = self._repair(incomplete_state, cvrp_config)
+        # print("--------new_state:", new_state.sol_path)
         # irá retornar o quão bom é o novo  grafo segundo algum critério
         new_state_score = self.scoring_function(new_state, cvrp_config)
         current_state_score = self.scoring_function(self.current_state, cvrp_config)
@@ -257,6 +266,7 @@ class ALNSIter:
         if new_state_score < current_state_score:
             success_increment = self.prob_parameters.lambda_weights.improved_state_weight
 
+        # print("--------current_state:", self.current_state.sol_path)
         
         if new_state_score < self.scoring_function(self.best_state, cvrp_config):
             # print(new_state_score, self.scoring_function(self.best_state, cvrp_config))

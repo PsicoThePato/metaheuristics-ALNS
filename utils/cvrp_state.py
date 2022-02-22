@@ -21,7 +21,7 @@ class Cvrp_state:
 
     def __init__(self, cvrp_input: Cvrp) -> None:
         salesman_array = random.sample(range(cvrp_input.nb_citys), cvrp_input.nb_citys)
-        print(salesman_array)
+        # print(salesman_array)
         self.sol_path = np.array(salesman_array)
         self.deleted_cities = []
         self.deleted_cities_index = []

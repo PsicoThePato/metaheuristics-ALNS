@@ -2,6 +2,7 @@ import sys
 import math
 
 def read_elem(filename):
+    # print(filename)
     with open(filename) as f:
         return [str(elem) for elem in f.read().split()]
 

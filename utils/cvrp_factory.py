@@ -8,7 +8,7 @@ def factory(instance_file, str_time_limit, sol_file, str_nb_trucks):
     #
     # Reads instance data
     #
-    (nb_customers, truck_capacity, distance_matrix, distance_warehouses, demands) = read_input_cvrp(instance_file)
+    (nb_customers, truck_capacity, distance_matrix, distance_warehouses, demands, best_cost) = read_input_cvrp(instance_file)
 
     # The number of trucks is usually given in the name of the file
     # nb_trucks can also be given in command line
@@ -27,7 +27,7 @@ def factory(instance_file, str_time_limit, sol_file, str_nb_trucks):
     # print("Demanda das cidades: ",demands, " " ,len(demands))
     # print("Distâncias entre as cidades e o depósito: ", distance_warehouses, " " ,len(distance_warehouses))
 
-    return nb_customers, truck_capacity, distance_matrix, distance_warehouses, demands, nb_trucks
+    return nb_customers, truck_capacity, distance_matrix, distance_warehouses, demands, nb_trucks, best_cost
 
 def read_elem(filename):
     with open(filename) as f:
@@ -59,6 +59,11 @@ def read_input_cvrp(filename):
                 sys.exit(1)
         elif token == "NODE_COORD_SECTION":
             break
+        elif token == "value:":
+            # next(file_it)  # Removes the ":"
+            token = next(file_it)
+            best_cost = token[0:len(token)-1]
+            
 
     customers_x = [None] * nb_customers
     customers_y = [None] * nb_customers
@@ -115,7 +120,7 @@ def read_input_cvrp(filename):
         print("Expecting only one warehouse, more than one found")
         sys.exit(1)
 
-    return (nb_customers, truck_capacity, distance_matrix, distance_warehouses, demands)
+    return (nb_customers, truck_capacity, distance_matrix, distance_warehouses, demands, best_cost)
 
 
 # Computes the distance matrix

@@ -1,0 +1,11 @@
+Entrada;Intensidade ( (quantidade de cidades a ser removida na heuristica de destruição));Tempo máximo;Percent(quanto que a resposta deve diminuir);Tempo de execução;N° Iterações;Resultado Final;Média de resultado por iteração;Tempo para chegar no melhor resultado;Tempo médio por iteração; Desvio em relação a solução ótima
+A-n32-k5.vrp ; 0.3 ; 1 ; 30.0 ; 0.0214 ; 108 ; 1843 ; 2004.4 ; 0.02 ; 0.0041 ; 1059
+A-n33-k5.vrp ; 0.3 ; 1 ; 30.0 ; 0.0217 ; 107 ; 1479 ; 1697.2 ; 0.02 ; 0.0041 ; 818
+A-n33-k6.vrp ; 0.3 ; 1 ; 30.0 ; 0.0216 ; 107 ; 1438 ; 1641.2 ; 0.0201 ; 0.0041 ; 696
+A-n34-k5.vrp ; 0.3 ; 1 ; 30.0 ; 0.0218 ; 108 ; 1592 ; 1818.2 ; 0.0202 ; 0.0041 ; 814
+A-n36-k5.vrp ; 0.3 ; 1 ; 30.0 ; 0.0217 ; 102 ; 1691 ; 1928.4 ; 0.0201 ; 0.0041 ; 892
+A-n37-k5.vrp ; 0.3 ; 1 ; 30.0 ; 0.0218 ; 100 ; 1680 ; 1764.2 ; 0.0202 ; 0.0041 ; 1011
+A-n37-k6.vrp ; 0.3 ; 1 ; 30.0 ; 0.0219 ; 94 ; 1862 ; 2079.6 ; 0.0202 ; 0.0042 ; 913
+A-n38-k5.vrp ; 0.3 ; 1 ; 30.0 ; 0.0216 ; 99 ; 1765 ; 2007.8 ; 0.02 ; 0.0041 ; 1035
+A-n39-k5.vrp ; 0.3 ; 1 ; 30.0 ; 0.0217 ; 93 ; 1857 ; 1980.2 ; 0.0202 ; 0.0041 ; 1035
+A-n39-k6.vrp ; 0.3 ; 1 ; 30.0 ; 0.0216 ; 96 ; 1865 ; 2157.4 ; 0.0201 ; 0.0041 ; 1034

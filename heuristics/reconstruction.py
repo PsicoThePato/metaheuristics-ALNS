@@ -6,16 +6,22 @@ from utils.cvrp_sol import Cvrp_sol
 from utils.cvrp_state import Cvrp_state
 import random
 import numpy as np
+import copy 
 
-def random_constructor (state: Cvrp_state, problem: Cvrp):
+def random_constructor (old_state: Cvrp_state, problem: Cvrp):
+    state = copy.copy(old_state)
+    # print("--------------random_constructor--------------")
     for city in state.deleted_cities:
         remove_index = state.deleted_cities_index.pop(random.randrange(len(state.deleted_cities_index)))
+        # print("index: ",remove_index, " City: ",city)
         state.sol_path[remove_index] = city
     return state
     
     # print(state.sol_path)
 
-def greedy_constructor (state: Cvrp_state, problem: Cvrp):
+def greedy_constructor (old_state: Cvrp_state, problem: Cvrp):
+    state = copy.copy(old_state)
+    # print("--------------greedy_constructor--------------")
     best_cost = 999999
     current_cost = 0
     selected_index = 0
