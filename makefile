@@ -9,7 +9,6 @@ IN2=$(DATA)/Fisher
 # Parametros
 intensity = 30
 str_time_limit = 300
-percent = 30
 
 runall:
 	echo "Entrada;Intensidade ( (quantidade de cidades a ser removida na heuristica de destruição));\
@@ -18,7 +17,7 @@ runall:
 	Tempo médio por iteração; Desvio em relação a solução ótima" >> test.csv 
 	-for FILE in $(IN1)/*.vrp; do \
         echo "\nRunning $${FILE}" &&\
-		$(EXEC) $${FILE} ${intensity} ${str_time_limit} ${percent} &&\
+		$(EXEC) $${FILE} ${intensity} ${str_time_limit} &&\
 		echo;\
     done;
 

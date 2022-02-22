@@ -70,17 +70,17 @@ def read_input_cvrp(filename):
     depot_x = 0
     depot_y = 0
     for n in range(nb_nodes):
-        node_id = int(next(file_it))
+        node_id = int(float(next(file_it)))
         if node_id != n + 1:
             print("Unexpected index")
             sys.exit(1)
         if node_id == 1:
-            depot_x = int(next(file_it))
-            depot_y = int(next(file_it))
+            depot_x = int(float(next(file_it)))
+            depot_y = int(float(next(file_it)))
         else:
             # -2 because orginal customer indices are in 2..nbNodes
-            customers_x[node_id - 2] = int(next(file_it))
-            customers_y[node_id - 2] = int(next(file_it))
+            customers_x[node_id - 2] = int(float(next(file_it)))
+            customers_y[node_id - 2] = int(float(next(file_it)))
 
     # Compute distance matrix
     distance_matrix = compute_distance_matrix(customers_x, customers_y)

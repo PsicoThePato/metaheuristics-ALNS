@@ -81,41 +81,42 @@ def main(instance_file):
         cvrp_state = Cvrp_state(cvrp_test)
         alnsIter.do_alns_iteraction(intensity, cvrp_state, cvrp_test )
         best_result = calc_cost_func(alnsIter.best_state, cvrp_test)
-        reduce_value = best_result*percent
-        goal_value = best_result - reduce_value
+        # reduce_value = best_result*percent
+        # goal_value = best_result - reduce_value
         initial_cost = best_result
 
         internal_iteration = time.time()
 
         # print("Òtimo custo: ", int(opt_cost))
+        iter_max = 0
 
         while(1):
             cont_iter += 1
+            iter_max += 1 # quando checa em 1000 para
             # print("intensity: ", intensity)
 
-            alnsIter.do_alns_iteraction( percent, None, cvrp_test )
+            alnsIter.do_alns_iteraction( intensity, None, cvrp_test )
             current_best_result = calc_cost_func(alnsIter.best_state, cvrp_test)
             # print(calc_cost_func(alnsIter.best_state, cvrp_test))
             # print("best state: ",alnsIter.best_state.sol_path)
             print("Best cost: ", calc_cost_func(alnsIter.best_state, cvrp_test))
             # print("current state: ",alnsIter.current_state.sol_path,  " cost: ", calc_cost_func(alnsIter.current_state, cvrp_test))
             print("Current cost: ", calc_cost_func(alnsIter.current_state, cvrp_test))
-            print("Goal cost: ", goal_value)
+            # print("Goal cost: ", goal_value)
             print("inital cost: ", initial_cost)
             # print()
             # print(current_result)
             if current_best_result < best_result:
                 best_result = current_best_result
 
-                if current_best_result <= goal_value:
-                    exit(1)
-                    break
+                # if current_best_result <= goal_value:
+                #     break
             
             # deveria ser 300 segundo o enunciado
             fim = time.time()
             # print(fim - inicio)
             # print("\n\n")
-            if fim - inicio > str_time_limit:
+            if fim - inicio > str_time_limit or iter_max > 1000:
                 break
         # print("Best result: ", best_result)
         
@@ -145,12 +146,12 @@ def main(instance_file):
     
     
     # print(cost, " ", result, " ", result - int(cost))
-    print(instance_file.split('/')[-1], ';', intensity  , ';' , str_time_limit , ';', percent*100 , ";" , # PARAMETROS
+    print(instance_file.split('/')[-1], ';', intensity  , ';' , str_time_limit , ';' , # PARAMETROS
         round(total_time, 4),';' ,  total_iteration,';' , 
         result, ';' , round(avarage_result,4),';' , 
         round(time_best_result,4),';' , 
         round(avarage_time_iteration,4), ';', 
-        result - int(opt_cost) )
+        round((result - int(opt_cost))/int(opt_cost), 4) )
     # print("test ", alnsIter.current_state.sol_path)
 
 
@@ -185,7 +186,6 @@ if __name__ == '__main__':
     instance_file = sys.argv[1]
     intensity = int(sys.argv[2]) if len(sys.argv) > 2 else int("50")
     str_time_limit = int(sys.argv[3]) if len(sys.argv) > 3 else int("20")
-    percent = int(sys.argv[4]) if len(sys.argv) > 4 else int("10")
 
     if(intensity > 100 or intensity < 0):
         print("Intensidade é uma porcentagem, não pode ser maior que 100% nem menor que 0%.")
@@ -197,13 +197,8 @@ if __name__ == '__main__':
         print("Usage: python cvrp.py input_file [intensity] [str_time_limit] [percent]")
         sys.exit(1)
     
-    if(percent > 100 or percent < 0):
-        print("Porcentagem é uma porcentagem, não pode ser maior que 100% nem menor que 0%.")
-        print("Usage: python cvrp.py input_file [intensity] [str_time_limit] [percent]")
-        sys.exit(1)
 
     intensity = intensity/100
-    percent = percent/100
 
 
     # print("intensity: ", intensity)
