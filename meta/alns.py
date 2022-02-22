@@ -8,6 +8,7 @@ from problems import definitions
 from problems.cvrp import Cvrp, CvrpState
 import copy
 
+
 @dataclass
 class StateTransition:
     """
@@ -61,10 +62,8 @@ class ALNSProbParameters:
         self.rho = rho
 
         # Probabilidade de uso das heuristicas
-        self.destroy_prob = np.ones(
-            destroy_heuristics_len) / destroy_heuristics_len
-        self.repair_prob = np.ones(
-            repair_heuristics_len) / repair_heuristics_len
+        self.destroy_prob = np.ones(destroy_heuristics_len) / destroy_heuristics_len
+        self.repair_prob = np.ones(repair_heuristics_len) / repair_heuristics_len
 
         # Informação do grau de sucesso da heuristica
         # é usado na definição da probabilidade mas não é o único fator
@@ -83,13 +82,13 @@ class ALNSIter:
 
         Lista de heuristicas de destruição
                 '"Iterable[Callable[[float, Cvrp], Cvrp]],"
-                Uma lista de funções que irão executar a heuristica. Tem como parametro é dado o grafo valido onde a heuristica 
+                Uma lista de funções que irão executar a heuristica. Tem como parametro é dado o grafo valido onde a heuristica
                 sera aplicada e um float representado o grau de distruibuição que será aplicado a nesse grafo pela heurística.
                 A 'função deverá retornar um grafo inválido  (ou seja, com nós não conectados).
 
         Lista de heuristicas de reparação
                 "repair_heuristics: Iterable[Callable[[Cvrp], Cvrp]]"
-                Uma  lista de funções que irão executar a heuristica de reparação. Tem como parametro o grafo inválido (ou seja, com 
+                Uma  lista de funções que irão executar a heuristica de reparação. Tem como parametro o grafo inválido (ou seja, com
                 nós não conectados) a ser reparado. Tem como saida um grafo reparado, ou seja válido.
 
         Função que avalia um solução (grafo apos ser destruido e reparado)
@@ -100,7 +99,7 @@ class ALNSIter:
         Função que substiui o estado atual seguindo algum parametro previamente definido
                 "acceptance_function: Callable[[StateTransition], bool]"
                 Uma função que recebe  como  parametro um StateTransition, contendo dois estados: o atual e o novo gerado
-                pela última iteração do processo de destruição e reconstrução. Tem como saida um bool representando se a 
+                pela última iteração do processo de destruição e reconstrução. Tem como saida um bool representando se a
                 mudança foi aceita ou rejeitada.
 
         Objeto que guarda dados relacionados ao histórico da execução da heuristica
@@ -116,11 +115,9 @@ class ALNSIter:
         prob_parameters: ALNSProbParameters,
     ):
         if not destroy_heuristics or not repair_heuristics:
-            raise ValueError(
-                "Needs to have at least one destroy and one repair heuristic defined")
+            raise ValueError("Needs to have at least one destroy and one repair heuristic defined")
         if isgenerator(destroy_heuristics) or isgenerator(repair_heuristics):
-            raise ValueError(
-                "Can't use a generator since heuristics will be itered upon multiple times")
+            raise ValueError("Can't use a generator since heuristics will be itered upon multiple times")
 
         self.destroy_heuristics = destroy_heuristics
         self.repair_heuristics = repair_heuristics
@@ -130,10 +127,7 @@ class ALNSIter:
         self.current_state = None
         self.prob_parameters = prob_parameters
 
-    def _destroy(
-        self, destruction_parameter: float, 
-        state: CvrpState, cvrp_config: Cvrp
-        ) -> CvrpState:
+    def _destroy(self, destruction_parameter: float, state: CvrpState, cvrp_config: Cvrp) -> CvrpState:
         """
         Selects a destroy heuristic at random, use it to deconstruct given state
         and returns an incomplete state and the index of the utilized heuristic
@@ -142,8 +136,7 @@ class ALNSIter:
         #  e uma lista de probabilidades que será percorrida
         # Ao final é retornada o indice da lista de probabilidades, que no nosso caso
         # será o mesmo indice da  heuristica que estamos  buscando.
-        dh_func_idx = np.random.choice(
-            len(self.destroy_heuristics), p=self.prob_parameters.destroy_prob)
+        dh_func_idx = np.random.choice(len(self.destroy_heuristics), p=self.prob_parameters.destroy_prob)
         dh_func = self.destroy_heuristics[dh_func_idx]
         # print("destruction_parameter", destruction_parameter)
         incomplete_state = dh_func(destruction_parameter, state, cvrp_config)
@@ -156,8 +149,7 @@ class ALNSIter:
         """
         # print("\n-----REPAIR----")
         # print("Estado quebrado: ", state.sol_path)
-        rh_func_idx = np.random.choice(
-            len(self.destroy_heuristics), p=self.prob_parameters.destroy_prob)
+        rh_func_idx = np.random.choice(len(self.destroy_heuristics), p=self.prob_parameters.destroy_prob)
         rh_func = self.repair_heuristics[rh_func_idx]
         new_state = rh_func(state, cvrp_config)
         # print("Estado Não quebrado: ", new_state.sol_path)
@@ -175,25 +167,24 @@ class ALNSIter:
         """
         # Faz mascaras para percorrer a lista de probabilidades heuristicas.
         # 	"prob_parameters.times_used_destroy_heuristics != 0"
-        #	Essa comparação retonará uma lista booleana, onde cada elemento será a comparação
+        # 	Essa comparação retonará uma lista booleana, onde cada elemento será a comparação
         # 	do mesmo com o número 0. Ou seja, se um valor foi diferente de 0 o mesmo receberá true.
         # 	Essa lista de booleanos é chamada de mascara, e ao passar ela para um dado Array
         # 	o mesmo  será modificado apenas nos valores cuja a representação na mascara for
-        #	True.
+        # 	True.
         # Ex  de uso de mascara:
-        #	x = numpy.array([1,2,3])
+        # 	x = numpy.array([1,2,3])
         # 	y = numpy.array([False,True,True])
-        #	x[y] = 5
-        #	x -> [1,5,5]
-        #	x[y]= [3,6]
-        #	x -> [1,3,6]
+        # 	x[y] = 5
+        # 	x -> [1,5,5]
+        # 	x[y]= [3,6]
+        # 	x -> [1,3,6]
         destroy_used_more_than_zero_mask = prob_parameters.times_used_destroy_heuristics != 0
         repair_used_more_than_zero_mask = prob_parameters.times_used_repair_heuristics != 0
 
         # formula to calc new probability of used heuristics
         def calc_new_prob(rho, heuristics_prob, heuristics_success, times_used):
-            new_heuristics_prob = (1 - rho) * heuristics_prob + \
-                rho * heuristics_success / times_used
+            new_heuristics_prob = (1 - rho) * heuristics_prob + rho * heuristics_success / times_used
             return new_heuristics_prob
 
         # updating used heuristics probabilities
@@ -211,35 +202,35 @@ class ALNSIter:
         )
 
         # updating unused heuristics probabilities
-        unused_destroy_mask = np.logical_not(
-            destroy_used_more_than_zero_mask)  # inverte a mascara usada acima
-        prob_parameters.destroy_prob[unused_destroy_mask] = (
-            (1 - prob_parameters.rho) *
-            prob_parameters.destroy_prob[unused_destroy_mask]
-        )
+        unused_destroy_mask = np.logical_not(destroy_used_more_than_zero_mask)  # inverte a mascara usada acima
+        prob_parameters.destroy_prob[unused_destroy_mask] = (1 - prob_parameters.rho) * prob_parameters.destroy_prob[
+            unused_destroy_mask
+        ]
         unused_repair_mask = np.logical_not(repair_used_more_than_zero_mask)
-        prob_parameters.repair_prob[unused_repair_mask] = (
-            (1 - prob_parameters.rho) *
-            prob_parameters.repair_prob[unused_repair_mask]
-        )
+        prob_parameters.repair_prob[unused_repair_mask] = (1 - prob_parameters.rho) * prob_parameters.repair_prob[
+            unused_repair_mask
+        ]
 
     def do_alns_iteraction(
         self,
-        destruction_parameter: float, # passar porcentage, tipo 50 equivale a 50%
+        destruction_parameter: float,  # passar porcentage, tipo 50 equivale a 50%
         state: CvrpState,
-        cvrp_config: Cvrp
-        ) -> CvrpState:
+        cvrp_config: Cvrp,
+    ) -> CvrpState:
         """
         Do one iteraction of ALNS with destroy and repair heuristics given to class object. Returns new state.
         """
         if self.current_state != None:
             state = self.current_state
 
-        # print("State: ",state.sol_path)    
-        
+        # print("State: ",state.sol_path)
+
         incomplete_state, dh_idx = self._destroy(
             # retorna estadoincompleto/grafo incompleto e indice da heuristtica
-            destruction_parameter, state, cvrp_config)  
+            destruction_parameter,
+            state,
+            cvrp_config,
+        )
         # print("--------incomplete_state:", incomplete_state.sol_path)
         # novo estado completo/grafo completo e o indice da heuristica utilizada
         new_state, rh_idx = self._repair(incomplete_state, cvrp_config)
@@ -248,10 +239,8 @@ class ALNSIter:
         new_state_score = self.scoring_function(new_state, cvrp_config)
         current_state_score = self.scoring_function(self.current_state, cvrp_config)
         # irá  retornar um booleando dizendo se a nova solução foi aceita
-        
-        isaccepted = self.acceptance_function(
-            [self.current_state, new_state],
-            cvrp_config)
+
+        isaccepted = self.acceptance_function([self.current_state, new_state], cvrp_config)
         success_increment = 0
         # print("isaccepted ", isaccepted)
         # return
@@ -261,13 +250,12 @@ class ALNSIter:
             self.current_state = new_state
             success_increment = self.prob_parameters.lambda_weights.accepted_state_weight
 
-           
             # Define o incremento segundo o  caso o novo estado apresente melhor pontuação
         if new_state_score < current_state_score:
             success_increment = self.prob_parameters.lambda_weights.improved_state_weight
 
         # print("--------current_state:", self.current_state.sol_path)
-        
+
         if new_state_score < self.scoring_function(self.best_state, cvrp_config):
             # print(new_state_score, self.scoring_function(self.best_state, cvrp_config))
             # print("---------------TEST-----------")
