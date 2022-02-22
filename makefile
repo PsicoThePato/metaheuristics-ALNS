@@ -12,7 +12,7 @@ str_time_limit = 300
 
 runall:
 	echo "Entrada;Intensidade ( (quantidade de cidades a ser removida na heuristica de destruição));\
-	Tempo máximo;Percent(quanto que a resposta deve diminuir);Tempo de execução;\
+	Tempo máximo;Tempo de execução;\
 	N° Iterações;Resultado Final;Média de resultado por iteração;Tempo para chegar no melhor resultado;\
 	Tempo médio por iteração; Desvio em relação a solução ótima" >> test.csv 
 	-for FILE in $(IN1)/*.vrp; do \
