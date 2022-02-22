@@ -8,7 +8,7 @@ IN2=$(DATA)/Fisher
 
 # Parametros
 intensity = 30
-str_time_limit = 1
+str_time_limit = 300
 percent = 30
 
 runall:
@@ -18,7 +18,7 @@ runall:
 	Tempo médio por iteração; Desvio em relação a solução ótima" >> test.csv 
 	-for FILE in $(IN1)/*.vrp; do \
         echo "\nRunning $${FILE}" &&\
-		$(EXEC) $${FILE} ${intensity} ${str_time_limit} ${percent} >> test.csv &&\
+		$(EXEC) $${FILE} ${intensity} ${str_time_limit} ${percent} &&\
 		echo;\
     done;
 

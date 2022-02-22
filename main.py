@@ -97,24 +97,25 @@ def main(instance_file):
             current_best_result = calc_cost_func(alnsIter.best_state, cvrp_test)
             # print(calc_cost_func(alnsIter.best_state, cvrp_test))
             # print("best state: ",alnsIter.best_state.sol_path)
-            # print("Best cost: ", calc_cost_func(alnsIter.best_state, cvrp_test))
+            print("Best cost: ", calc_cost_func(alnsIter.best_state, cvrp_test))
             # print("current state: ",alnsIter.current_state.sol_path,  " cost: ", calc_cost_func(alnsIter.current_state, cvrp_test))
-            # print("Current cost: ", calc_cost_func(alnsIter.current_state, cvrp_test))
-            # print("Goal cost: ", goal_value)
-            # print("inital cost: ", initial_cost)
+            print("Current cost: ", calc_cost_func(alnsIter.current_state, cvrp_test))
+            print("Goal cost: ", goal_value)
+            print("inital cost: ", initial_cost)
             # print()
             # print(current_result)
             if current_best_result < best_result:
                 best_result = current_best_result
 
                 if current_best_result <= goal_value:
+                    exit(1)
                     break
             
             # deveria ser 300 segundo o enunciado
             fim = time.time()
             # print(fim - inicio)
             # print("\n\n")
-            if fim - inicio > 0.02:
+            if fim - inicio > str_time_limit:
                 break
         # print("Best result: ", best_result)
         
